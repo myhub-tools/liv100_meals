@@ -249,7 +249,7 @@
           <div>
             <span class="text-xs font-bold uppercase tracking-wider text-paprika">2-Hour Family Prep</span>
             <h1 class="font-display text-2xl font-extrabold text-forest mt-0.5">Sunday Batch-Cooking Guide (<span class="js-family-phrase">Family of 5</span>)</h1>
-            <p class="text-sm text-stone-500 mt-1">Tick off each prep stage as you cook. Weekday dinners will take under 15 minutes.</p>
+            <p class="text-sm text-stone-500 mt-1">Tick off each prep stage as you cook. Rice and couscous are cooked fresh on the day, so most weekday dinners take about 20–30 minutes.</p>
             <div class="mt-3"><div class="inline-flex items-center gap-2 select-none" role="group" aria-label="Family size">
               <span class="text-xs font-semibold text-stone-500">Cooking for</span>
               <div class="inline-flex items-center rounded-xl bg-gold/10 border border-gold/60 text-[#8a6a12]">
@@ -406,15 +406,12 @@
       { id: 'p2', title: '2. Roast the Cauliflower',
         subtitle: n => `${trays(n)} baking tray${trays(n) > 1 ? 's' : ''}`,
         text: n => `Cut ${plural(qty.cauli(n), 'head')} of cauliflower into florets. Toss in melted butter heavily seasoned with smoked paprika, garlic powder, and salt. Spread across ${trays(n) > 1 ? 'two trays' : 'a tray'} so they aren't overcrowded and roast at 200°C for 20–25 minutes until golden.` },
-      { id: 'p3', title: '3. Cook the Grains (Rice & Giant Couscous)',
-        subtitle: n => n > 2 ? 'Large pots' : 'Two pots',
-        text: n => `Cook ${cups(n)} of dry rice in a pot with water and salt (simmer covered 12 mins). Boil a pot of salted water, add ${cups(n)} of giant couscous, simmer 8–10 mins, drain, and toss with olive oil or butter. Rice safety: cool it within an hour, keep it in the fridge and eat within 1 day. Freeze the rest in portions and reheat until steaming hot (only reheat once).` },
-      { id: 'p4', title: '4. Season and Cook the Chicken Breasts',
+      { id: 'p4', title: '3. Season and Cook the Chicken Breasts',
         subtitle: n => 'Batch-roast',
         text: n => `Pat ${range(...qty.chicken(n))} chicken breasts dry. Rub thoroughly with olive oil, smoked paprika, garlic powder, salt, and pepper. Slice ${n} red pepper${n > 1 ? 's' : ''} and ${n} courgette${n > 1 ? 's' : ''} to roast alongside at 200°C for 20–25 minutes. Slice chicken when cooled.` },
-      { id: 'p5', title: '5. Fridge Stacking & Fresh Fish Strategy',
+      { id: 'p5', title: '4. Fridge Stacking & Fresh Fish Strategy',
         subtitle: n => 'Storage & Weekday Assembly',
-        text: n => 'Let items cool completely before sealing. Keep salmon and sea bass raw in the fridge—they take under 10 minutes to pan-sear fresh during the week, paired straight out of your prepped veggies and grains. Eat cooked chicken and veg within 2–3 days; freeze portions for later in the week and defrost in the fridge overnight.' }
+        text: n => 'Let items cool completely before sealing. Keep salmon and sea bass raw in the fridge—they take under 10 minutes to pan-sear fresh during the week, paired with your prepped veggies and freshly cooked rice or couscous. Eat cooked chicken and veg within 2–3 days; freeze portions for later in the week and defrost in the fridge overnight.' }
     ];
 
     // --- FAMILY SIZE SCALING ---
@@ -516,6 +513,8 @@
       skillet: { steps: ["Flatten thick breasts a little (or slice in half through the side) so they cook evenly.", "Season with smoked paprika, garlic powder, salt and pepper.", "Heat 1 tbsp olive oil or butter over a medium-high heat. Cook 5–7 minutes per side without moving them."],
               done: "No pink in the middle and the juices run clear (75°C in the thickest part). Rest 5 minutes, then slice." }
     };
+    const RICE_HOW = "Rice (cook fresh, about 75g dry per person): rinse it, put in a pan with 1½ times as much water and a pinch of salt, bring to the boil, then cover and simmer on the lowest heat for 12 minutes. Rest 5 minutes with the lid on and fluff with a fork. Brown rice: boil in plenty of water for 25–30 minutes, then drain.";
+    const COUS_HOW = "Giant couscous (cook fresh, about 70g dry per person): boil in salted water for 8–10 minutes until tender, drain, and toss with a little olive oil or butter.";
     const PREPPED_CHICKEN_NOTE = "Using Sunday's batch-cooked chicken? Slice it cold for salads, or reheat until piping hot all the way through. To cook it fresh instead, pick a method below.";
 
     const eggsHob = (steps) => ({ skillet: { steps, done: "Whites fully set; yolks as you like them." } });
@@ -535,7 +534,7 @@
         tip: "Cook 1–2 extra fillets: Tuesday's lunch uses leftover salmon. Cool, cover and refrigerate within 2 hours." },
       // TUESDAY
       "1-breakfast": { nocook: { steps: ["The night before, per person: 50g rolled oats, 120ml unsweetened milk (or water) and 1 tsp chia seeds in a jar or bowl.", "Add a pinch of cinnamon, stir well, cover and refrigerate overnight (at least 4 hours).", "In the morning, stir and top with a handful of fresh berries."], done: "Oats are soft and creamy. Add a splash more milk if too thick." } },
-      "1-lunch": { nocook: { steps: ["Flake yesterday's leftover salmon (cold is fine, or reheat until piping hot).", "Mix with Sunday's cooked giant couscous, diced cucumber, diced red pepper and chopped parsley.", "Dress with olive oil, lemon juice, salt and pepper."], done: "Eat the leftover salmon within 1 day of cooking." } },
+      "1-lunch": { hob: { steps: ["Boil the giant couscous in salted water for 8–10 minutes until tender (about 70g dry per person). Drain and let it cool a little.", "Flake yesterday's leftover salmon (cold is fine, or reheat until piping hot).", "Mix with the couscous, diced cucumber, diced red pepper and chopped parsley. Dress with olive oil, lemon juice, salt and pepper."], done: "Couscous is tender. Eat the leftover salmon within 1 day of cooking." } },
       "1-dinner": {
         skillet: { steps: ["Take the steaks out of the fridge 20 minutes before. Pat dry and season well with salt and a pinch of smoked paprika.", "Heat a heavy pan until smoking hot with a little oil. For a 2.5cm steak: 2–3 min per side for medium-rare, 4 min per side for medium.", "In the last minute add a knob of butter and a crushed garlic clove; tilt the pan and spoon the butter over the steak.", "Rest on a board for 5 minutes. Meanwhile fry sliced courgettes in the same pan for 4–5 minutes."],
                    done: "Press the centre: soft = rare, slight spring = medium-rare, firm = well done. With a thermometer: 55°C medium-rare, 60°C medium, 70°C well done." },
@@ -543,7 +542,7 @@
                 done: "With a thermometer: 55°C medium-rare, 60°C medium, 70°C well done. Remember the steak keeps cooking a little while it rests." },
         airfryer: { steps: ["Preheat the air fryer to 200°C for 5 minutes.", "Rub the steaks with a little oil, salt and smoked paprika. Lay them flat, not touching.", "For a 2.5cm steak: 8–10 minutes for medium-rare, 11–13 for medium. Turn halfway.", "Top with a knob of garlic butter and rest 5 minutes."],
                 done: "With a thermometer: 55°C medium-rare, 60°C medium, 70°C well done." },
-        tip: "Reheat Sunday's rice until steaming hot all the way through (see the rice safety note in the Sunday prep)." },
+        tip: RICE_HOW },
       // WEDNESDAY
       "2-breakfast": eggsHob(["Whisk 2–3 eggs per person with a pinch of salt and smoked paprika.", "Melt butter in a non-stick pan over a low heat. Add the eggs and stir slowly with a spatula for 3–4 minutes.", "Take off the heat while still slightly glossy. Serve with smashed avocado."]),
       "2-lunch": { note: PREPPED_CHICKEN_NOTE, ...freshChicken,
@@ -555,7 +554,7 @@
                 done: "Flesh is white and opaque all the way through and flakes easily (63°C)." },
         airfryer: { steps: ["Preheat the air fryer to 200°C. Line the basket with a piece of baking paper (with holes) to stop sticking.", "Brush the fillets with oil, dust with smoked paprika and salt. Place skin-side up.", "Cook 6–8 minutes. No need to turn."],
                 done: "Flesh is white and opaque all the way through and flakes easily (63°C)." },
-        tip: "Toss Sunday's giant couscous with butter and reheat until hot. Serve with Sunday's paprika cauliflower." },
+        tip: "Serve over freshly cooked giant couscous tossed with butter, with Sunday's paprika cauliflower. " + COUS_HOW },
       // THURSDAY
       "3-breakfast": { nocook: { steps: ["The night before, per person: 50g rolled oats and 150g unsweetened Greek yogurt with a splash of milk.", "Stir in half a grated apple. Cover and refrigerate overnight.", "In the morning, top with crushed walnuts."], done: "Soft and creamy. Loosen with milk if needed." } },
       "3-lunch": { hob: { steps: ["Boil halved baby potatoes in salted water for 12–15 minutes until a knife slides in. Drain and sprinkle with smoked paprika.", "Boil eggs for 9 minutes, then cool in cold water and peel.", "Toss mixed leaves with the potatoes, tinned tuna (drained), quartered eggs and olives. Dress with olive oil and lemon."], done: "Potatoes tender all the way through." } },
@@ -568,7 +567,7 @@
       // FRIDAY
       "4-breakfast": eggsHob(["Slice chestnut mushrooms and fry in butter over a medium-high heat for 4–5 minutes until golden. Keep warm.", "Add more butter and fry 2–3 eggs per person for 2–3 minutes.", "Dust with smoked paprika. Serve with sliced avocado and the mushrooms."]),
       "4-lunch": { note: PREPPED_CHICKEN_NOTE, ...freshChicken,
-        tip: "Serve over warm giant couscous with Sunday's roasted peppers and courgettes and a drizzle of olive oil." },
+        tip: "Serve over freshly cooked giant couscous with Sunday's roasted peppers and courgettes and a drizzle of olive oil. " + COUS_HOW },
       "4-dinner": {
         oven: { steps: [`Heat the oven to ${OVEN200}.`, "Cut sweet potato into 2cm chunks; break cauliflower into florets; cut peppers, courgettes and red onion into chunks; halve the mushrooms.", "Toss everything with olive oil, crushed garlic, smoked paprika and salt. Spread over 1–2 trays (don't crowd them).", "Roast 30–35 minutes, turning halfway."],
                 done: "Sweet potato is soft inside and everything is golden at the edges." },
@@ -576,7 +575,7 @@
                 done: "Sweet potato is soft inside and everything is golden at the edges." },
         skillet: { steps: ["Cut everything small (1–1.5cm) so it cooks quickly.", "Fry the sweet potato and cauliflower in olive oil over a medium heat for 10–12 minutes, stirring.", "Add peppers, onion, courgettes and mushrooms, garlic and smoked paprika. Cook 8–10 minutes more."],
                 done: "Sweet potato is soft inside and the veg is lightly charred." },
-        tip: "Serve over rice with a spoonful of Greek yogurt, chopped parsley and a squeeze of lemon. Rice: cook fresh, or use rice frozen on Sunday, reheated until steaming hot." },
+        tip: "Serve over freshly cooked rice with a spoonful of Greek yogurt, chopped parsley and a squeeze of lemon. " + RICE_HOW },
       // SATURDAY
       "5-breakfast": { nocook: { steps: ["The night before, per person: 50g rolled oats, 120ml unsweetened almond or dairy milk and 1 tsp ground flaxseed.", "Stir, cover and refrigerate overnight.", "In the morning, top with pumpkin seeds and fresh blueberries."], done: "Oats are soft and creamy." } },
       "5-lunch": { skillet: { steps: ["Reheat Thursday's leftover lamb in a pan until piping hot all the way through.", "Slice courgettes into long ribbons with a peeler. Cook in a hot griddle or frying pan for 1–2 minutes per side.", "Plate with diced cucumber, chopped mint and a squeeze of lemon. Top with the warm lamb."], done: "Lamb is steaming hot throughout (only reheat leftovers once)." } },
@@ -590,7 +589,7 @@
       "6-breakfast": eggsHob(["Soften diced red pepper, courgette and a handful of spinach in butter for 3–4 minutes. Set aside.", "Whisk 3 eggs per omelette with a pinch of smoked paprika and salt. Pour into a hot buttered pan.", "Push the edges in as they set. After 1–2 minutes, spoon the veg onto one half and fold over. Serve with sliced avocado."]),
       "6-lunch": { hob: { steps: ["Warm olive oil in a large pot. Add crushed garlic and 2 tsp smoked paprika for 1 minute.", "Add chopped fresh tomatoes and cook 5 minutes until they break down.", "Add diced sweet potato, courgettes and red peppers and enough water to just cover. Season.", "Simmer, part-covered, for 25–30 minutes, stirring now and then."], done: "Sweet potato is soft and the stew has thickened." } },
       "6-dinner": {
-        skillet: { steps: ["Pat the prawns dry. Melt butter with a little olive oil over a medium-high heat.", "Add crushed garlic for 30 seconds, then the prawns in a single layer.", "Cook 1–2 minutes per side. Sprinkle with smoked paprika and chilli flakes.", "Toss with warm giant couscous and courgettes fried in the same pan."],
+        skillet: { steps: ["Pat the prawns dry. Melt butter with a little olive oil over a medium-high heat.", "Add crushed garlic for 30 seconds, then the prawns in a single layer.", "Cook 1–2 minutes per side. Sprinkle with smoked paprika and chilli flakes.", "Toss with freshly cooked giant couscous (boil it for 8–10 minutes while you cook the prawns) and courgettes fried in the same pan."],
                    done: "Prawns are pink all over and opaque (no grey) and curled into a loose 'C'. A tight 'O' means overcooked." },
         oven: { steps: ["Heat the oven to 220°C (200°C fan / 425°F).", "Toss the prawns with melted butter, garlic, smoked paprika and chilli flakes. Spread on a tray.", "Roast for 6–8 minutes."],
                 done: "Prawns are pink all over and opaque, curled into a loose 'C'." },
