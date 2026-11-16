@@ -697,7 +697,8 @@
 
     // --- FAMILY PASSWORD ---
     // To change the password, ask Claude for a new code for this line.
-    const FAMILY_PASSWORD_HASH = '9eeaf943334d1784140ca83a5266e95e1500df629e49ccd4503486497642ed9a';
+    // Accepted: "i am enough" or "i am worthy" (spaces and capitals don't matter)
+    const FAMILY_PASSWORD_HASHES = ['9eeaf943334d1784140ca83a5266e95e1500df629e49ccd4503486497642ed9a', '56b758d45b733164dcab199239bc27e525aec64c756d8542ab754c75ff4ccf0c'];
     const UNLOCK_KEY = 'liv100_unlocked_v1';
 
     async function sha256(text) {
@@ -714,8 +715,9 @@
       e.preventDefault();
       const input = document.getElementById('familyPassword');
       const err = document.getElementById('passwordError');
-      if (await sha256(input.value.trim().toUpperCase()) === FAMILY_PASSWORD_HASH) {
-        try { localStorage.setItem(UNLOCK_KEY, FAMILY_PASSWORD_HASH); } catch (e) {}
+      const hash = await sha256(input.value.replace(/\s+/g, '').toUpperCase());
+      if (FAMILY_PASSWORD_HASHES.includes(hash)) {
+        try { localStorage.setItem(UNLOCK_KEY, hash); } catch (e) {}
         unlockPage();
       } else {
         err.classList.remove('hidden');
@@ -727,7 +729,7 @@
     (function autoUnlock() {
       let saved = null;
       try { saved = localStorage.getItem(UNLOCK_KEY); } catch (e) {}
-      if (saved === FAMILY_PASSWORD_HASH) {
+      if (FAMILY_PASSWORD_HASHES.includes(saved)) {
         window.addEventListener('DOMContentLoaded', unlockPage);
       }
     })();
