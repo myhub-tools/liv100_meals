@@ -70,7 +70,11 @@
           <div class="leading-none">
             <div class="flex items-center gap-2">
               <span class="font-logo font-extrabold text-[26px] tracking-tight text-navy">LIV</span>
-              <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border border-gold/60 bg-gold/10 text-[#8a6a12]">Family 5</span>
+              <div class="flex items-center rounded-lg border border-gold/60 bg-gold/10 text-[#8a6a12] select-none" role="group" aria-label="Family size">
+                <button type="button" onclick="changeFamilySize(-1)" id="familyMinus" class="w-7 h-7 flex items-center justify-center text-base font-bold rounded-l-lg hover:bg-gold/20 disabled:opacity-30 disabled:hover:bg-transparent" aria-label="Fewer people">&minus;</button>
+                <span class="text-[10px] font-bold uppercase tracking-wider px-1 whitespace-nowrap">Family <span id="familySizeLabel" class="text-xs">5</span></span>
+                <button type="button" onclick="changeFamilySize(1)" id="familyPlus" class="w-7 h-7 flex items-center justify-center text-base font-bold rounded-r-lg hover:bg-gold/20 disabled:opacity-30 disabled:hover:bg-transparent" aria-label="More people">+</button>
+              </div>
             </div>
             <p class="font-logo font-bold text-[11px] uppercase tracking-[0.18em] text-navy mt-1">Program</p>
           </div>
@@ -124,7 +128,7 @@
           <h1 id="featuredDayTitle" class="font-display text-2xl sm:text-3xl font-extrabold tracking-tight mb-1">
             Monday's Family Menu
           </h1>
-          <p class="text-stone-300 text-sm mb-6">Prepared for 5 · Real butter, extra-virgin olive oil, smoked paprika & whole ingredients.</p>
+          <p class="text-stone-300 text-sm mb-6">Prepared for <span class="js-family-size">5</span> · Real butter, extra-virgin olive oil, smoked paprika & whole ingredients.</p>
 
           <!-- 3 Meal Cards for Selected Day -->
           <div id="featuredMealsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -167,7 +171,7 @@
       <div class="bg-white rounded-3xl p-5 sm:p-7 border border-stone-200/80 shadow-xs">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
           <div>
-            <h1 class="font-display text-2xl font-extrabold text-forest">Family of 5 Shopping List</h1>
+            <h1 class="font-display text-2xl font-extrabold text-forest"><span class="js-family-phrase">Family of 5</span> Shopping List</h1>
             <p class="text-sm text-stone-500 mt-0.5">Tick items off in the shop. Your progress saves automatically on this device.</p>
           </div>
           <div class="flex items-center gap-2">
@@ -233,7 +237,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <span class="text-xs font-bold uppercase tracking-wider text-paprika">2-Hour Family Prep</span>
-            <h1 class="font-display text-2xl font-extrabold text-forest mt-0.5">Sunday Batch-Cooking Guide (Family of 5)</h1>
+            <h1 class="font-display text-2xl font-extrabold text-forest mt-0.5">Sunday Batch-Cooking Guide (<span class="js-family-phrase">Family of 5</span>)</h1>
             <p class="text-sm text-stone-500 mt-1">Tick off each prep stage as you cook. Weekday dinners will take under 15 minutes.</p>
           </div>
           <button onclick="resetPrepSteps()" class="self-start sm:self-center px-4 py-2 rounded-xl text-xs font-semibold border border-stone-300 text-stone-700 hover:bg-stone-100 transition">
@@ -360,13 +364,107 @@
     ];
 
     // --- SUNDAY BATCH PREP STEPS ---
+    // --- SUNDAY BATCH PREP STEPS (text adjusts to family size) ---
     const prepStepsData = [
-      { id: 'p1', title: '1. Roast the Root Veggies (Potatoes & Sweet Potatoes)', subtitle: 'Oven set to 200°C (400°F) · Use 2 large roasting trays', text: 'Chop sweet potatoes into cubes and halve the baby potatoes. Toss across two large baking sheets with olive oil, salt, pepper, and a heavy hand of smoked paprika. Roast for 30–35 minutes until crisp. Divide into large family containers.' },
-      { id: 'p2', title: '2. Roast the Cauliflower', subtitle: '2 baking trays', text: 'Cut 3 heads of cauliflower into florets. Toss in melted butter heavily seasoned with smoked paprika, garlic powder, and salt. Spread across two trays so they aren\'t overcrowded and roast at 200°C for 20–25 minutes until golden.' },
-      { id: 'p3', title: '3. Cook the Grains (Rice & Giant Couscous)', subtitle: 'Large pots', text: 'Cook 2 cups of dry rice in a large pot with water and salt (simmer covered 12 mins). Boil a large pot of salted water, add 2 cups of giant couscous, simmer 8–10 mins, drain, and toss with olive oil or butter.' },
-      { id: 'p4', title: '4. Season and Cook the Chicken Breasts', subtitle: 'Mass batch-roast', text: 'Pat 10–12 chicken breasts dry. Rub thoroughly with olive oil, smoked paprika, garlic powder, salt, and pepper. Slice 5 red peppers and 5 courgettes to roast alongside at 200°C for 20–25 minutes. Slice chicken when cooled.' },
-      { id: 'p5', title: '5. Fridge Stacking & Fresh Fish Strategy', subtitle: 'Storage & Weekday Assembly', text: 'Let items cool completely before sealing. Keep salmon, sea bass, and cod raw in the fridge—they take under 10 minutes to pan-sear fresh during the week, paired straight out of your prepped veggies and grains.' }
+      { id: 'p1', title: '1. Roast the Root Veggies (Potatoes & Sweet Potatoes)',
+        subtitle: n => `Oven set to 200°C (400°F) · Use ${trays(n)} large roasting tray${trays(n) > 1 ? 's' : ''}`,
+        text: n => `Chop ${kg(qty.potatoes(n))} of sweet potatoes into cubes and halve ${kg(qty.potatoes(n))} of baby potatoes. Toss across ${trays(n) > 1 ? 'two large baking sheets' : 'one large baking sheet'} with olive oil, salt, pepper, and a heavy hand of smoked paprika. Roast for 30–35 minutes until crisp. Divide into ${n > 2 ? 'large family containers' : 'containers'}.` },
+      { id: 'p2', title: '2. Roast the Cauliflower',
+        subtitle: n => `${trays(n)} baking tray${trays(n) > 1 ? 's' : ''}`,
+        text: n => `Cut ${plural(qty.cauli(n), 'head')} of cauliflower into florets. Toss in melted butter heavily seasoned with smoked paprika, garlic powder, and salt. Spread across ${trays(n) > 1 ? 'two trays' : 'a tray'} so they aren't overcrowded and roast at 200°C for 20–25 minutes until golden.` },
+      { id: 'p3', title: '3. Cook the Grains (Rice & Giant Couscous)',
+        subtitle: n => n > 2 ? 'Large pots' : 'Two pots',
+        text: n => `Cook ${cups(n)} of dry rice in a pot with water and salt (simmer covered 12 mins). Boil a pot of salted water, add ${cups(n)} of giant couscous, simmer 8–10 mins, drain, and toss with olive oil or butter.` },
+      { id: 'p4', title: '4. Season and Cook the Chicken Breasts',
+        subtitle: n => 'Batch-roast',
+        text: n => `Pat ${range(...qty.chicken(n))} chicken breasts dry. Rub thoroughly with olive oil, smoked paprika, garlic powder, salt, and pepper. Slice ${n} red pepper${n > 1 ? 's' : ''} and ${n} courgette${n > 1 ? 's' : ''} to roast alongside at 200°C for 20–25 minutes. Slice chicken when cooled.` },
+      { id: 'p5', title: '5. Fridge Stacking & Fresh Fish Strategy',
+        subtitle: n => 'Storage & Weekday Assembly',
+        text: n => 'Let items cool completely before sealing. Keep salmon, sea bass, and cod raw in the fridge—they take under 10 minutes to pan-sear fresh during the week, paired straight out of your prepped veggies and grains.' }
     ];
+
+    // --- FAMILY SIZE SCALING ---
+    // The plan is written for 5. Every quantity is scaled by (size / 5) and rounded UP
+    // to something you can actually buy, so you never come home short.
+    const BASE_SIZE = 5, MIN_SIZE = 1, MAX_SIZE = 6;
+    const STORAGE_KEY_SIZE = 'liv100_family_size_v1';
+    let familySize = BASE_SIZE;
+
+    const up = (x, step = 1) => Math.max(step, Math.ceil(x / step - 1e-9) * step);
+    const sc = (base, n) => base * n / BASE_SIZE;
+    const range = (lo, hi) => lo === hi ? `${lo}` : `${lo}–${hi}`;
+    const plural = (num, word) => `${num} ${word}${num === 1 ? '' : 's'}`;
+    const kg = g => g >= 1000 ? `${+(g / 1000).toFixed(2)}kg` : `${g}g`;
+    const trays = n => n >= 4 ? 2 : 1;
+    const cups = n => {
+      const c = Math.max(0.5, Math.round(sc(2, n) * 2) / 2);
+      const whole = Math.floor(c), half = c % 1 ? '½' : '';
+      return `${whole || ''}${half} cup${c > 1 ? 's' : ''}`;
+    };
+    const dozen = d => { const w = Math.floor(d), h = d % 1 ? '½' : ''; return `${w || ''}${h}`; };
+
+    const qty = {
+      chicken:  n => [up(sc(10, n)), up(sc(12, n))],
+      fish45:   n => [up(sc(4, n)), up(sc(5, n))],
+      cod:      n => up(sc(4, n)),
+      lamb:     n => up(sc(1000, n), 250),
+      steaks:   n => n,
+      prawns:   n => up(n * 120, 50),
+      tuna:     n => up(sc(1, n)),
+      cauli:    n => up(sc(3, n)),
+      potatoes: n => up(sc(1500, n), 250),
+      veg810:   n => [up(sc(8, n)), up(sc(10, n))],
+      packs2:   n => up(sc(2, n)),
+      rice:     n => up(sc(2000, n), 500),
+      eggs:     n => [up(sc(36, n), 6) / 12, up(sc(48, n), 6) / 12],
+      avocado:  n => [up(sc(5, n)), up(sc(6, n))]
+    };
+
+    // Grocery item names for any family size (items not listed here don't scale: oils, spices, etc.)
+    const scaledNames = {
+      g1:  n => { const [a, b] = qty.chicken(n); return `${range(a, b)} Chicken Breasts (approx. ${range(+(a * 0.25).toFixed(2), +(b * 0.25).toFixed(2))}kg)`; },
+      g2:  n => `${range(...qty.fish45(n))} Salmon Fillet${qty.fish45(n)[1] > 1 ? 's' : ''}`,
+      g3:  n => `${range(...qty.fish45(n))} Sea Bass Fillet${qty.fish45(n)[1] > 1 ? 's' : ''}`,
+      g4:  n => `${plural(qty.cod(n), 'Cod Loin')} (center cut)`,
+      g5:  n => `${kg(qty.lamb(n))} Lean Lamb Mince`,
+      g6:  n => `${plural(qty.steaks(n), 'Steak')} & ${kg(qty.prawns(n))} King Prawns`,
+      g7:  n => `${plural(qty.tuna(n), 'Tin')} Tuna in Olive Oil (Only canned item)`,
+      g8:  n => `${qty.cauli(n)} Large Head${qty.cauli(n) > 1 ? 's' : ''} of Cauliflower`,
+      g9:  n => `${kg(qty.potatoes(n))} Baby Potatoes & ${kg(qty.potatoes(n))} Sweet Potatoes`,
+      g10: n => `${range(...qty.veg810(n))} Red Bell Peppers`,
+      g11: n => `${range(...qty.veg810(n))} Courgettes`,
+      g15: n => `${plural(qty.packs2(n), 'Bag')} Rolled Oats`,
+      g16: n => `${qty.packs2(n)} Large Pack${qty.packs2(n) > 1 ? 's' : ''} Giant Couscous`,
+      g17: n => `${kg(qty.rice(n))} Basmati or Brown Rice`,
+      g20: n => { const [a, b] = qty.eggs(n); return `Eggs (${a === b ? dozen(a) : dozen(a) + '–' + dozen(b)} dozen)`; },
+      g22: n => `Avocados (${range(...qty.avocado(n))} ripe)`
+    };
+
+    function displayName(item) {
+      if (item.custom) return item.name;
+      const f = scaledNames[item.id];
+      return f ? f(familySize) : item.name;
+    }
+
+    function familyPhrase(n) { return n === 1 ? 'Just Me' : `Family of ${n}`; }
+
+    function renderFamilySize() {
+      document.getElementById('familySizeLabel').textContent = familySize;
+      document.getElementById('familyMinus').disabled = familySize <= MIN_SIZE;
+      document.getElementById('familyPlus').disabled = familySize >= MAX_SIZE;
+      document.querySelectorAll('.js-family-size').forEach(el => el.textContent = familySize);
+      document.querySelectorAll('.js-family-phrase').forEach(el => el.textContent = familyPhrase(familySize));
+    }
+
+    function changeFamilySize(delta) {
+      const next = Math.min(MAX_SIZE, Math.max(MIN_SIZE, familySize + delta));
+      if (next === familySize) return;
+      familySize = next;
+      try { localStorage.setItem(STORAGE_KEY_SIZE, String(familySize)); } catch (e) {}
+      renderFamilySize();
+      renderGroceryList();
+      renderPrepSteps();
+    }
 
     // --- STATE MANAGEMENT ---
     const STORAGE_KEY_GROCERY = 'liv100_grocery_family5_v3';
@@ -387,6 +485,7 @@
     function initApp() {
       selectedDayIndex = actualToday;
       loadSavedData();
+      renderFamilySize();
       renderNavigation();
       renderFeaturedMenu();
       renderDaySelector();
@@ -403,9 +502,17 @@
       groceryItems = freshGroceryItems();
       prepStepsState = {};
       try {
-        const savedGrocery = localStorage.getItem(STORAGE_KEY_GROCERY);
-        if (savedGrocery) groceryItems = JSON.parse(savedGrocery);
+        const savedGrocery = JSON.parse(localStorage.getItem(STORAGE_KEY_GROCERY) || '[]');
+        savedGrocery.forEach(saved => {
+          const base = groceryItems.find(i => i.id === saved.id);
+          if (base) base.checked = !!saved.checked;
+          else if (saved.custom) groceryItems.push(saved);
+        });
       } catch (e) { groceryItems = freshGroceryItems(); }
+      try {
+        const savedSize = parseInt(localStorage.getItem(STORAGE_KEY_SIZE), 10);
+        if (savedSize >= MIN_SIZE && savedSize <= MAX_SIZE) familySize = savedSize;
+      } catch (e) {}
       try {
         const savedPrep = localStorage.getItem(STORAGE_KEY_PREP);
         if (savedPrep) prepStepsState = JSON.parse(savedPrep);
@@ -573,7 +680,7 @@
                 class="mt-0.5 w-4 h-4 rounded text-paprika focus:ring-paprika/20 border-stone-300 cursor-pointer"
                 ${item.checked ? 'checked' : ''}
               />
-              <span class="text-sm font-medium text-stone-800 flex-1 leading-snug">${item.name}</span>
+              <span class="text-sm font-medium text-stone-800 flex-1 leading-snug">${displayName(item)}</span>
               ${item.custom ? `<button onclick="event.preventDefault(); event.stopPropagation(); removeCustomItem('${item.id}')" class="text-stone-400 hover:text-red-500 text-xs px-1">&times;</button>` : ''}
             </label>
           `;
@@ -673,9 +780,9 @@
             <div class="flex-1">
               <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
                 <h3 class="font-display font-extrabold text-lg text-forest">${step.title}</h3>
-                <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-sand text-stone-600">${step.subtitle}</span>
+                <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-sand text-stone-600">${step.subtitle(familySize)}</span>
               </div>
-              <p class="text-sm text-stone-600 leading-relaxed ${isDone ? 'line-through text-stone-400' : ''}">${step.text}</p>
+              <p class="text-sm text-stone-600 leading-relaxed ${isDone ? 'line-through text-stone-400' : ''}">${step.text(familySize)}</p>
             </div>
           </div>
         `;
