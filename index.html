@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LIV100 · Family Whole-Food Hub & Grocery Checklist</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'sans-serif'],
+          },
+          colors: {
+            cream: '#FAF8F5',
+            sand: '#F2EDE4',
+            forest: '#182921',
+            pine: '#243C30',
+            paprika: '#C84B31',
+            paprikaDark: '#A63A23',
+            amberWarm: '#D97706',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-cream text-forest antialiased selection:bg-paprika selection:text-white min-h-screen flex flex-col">
+
+  <!-- Top Navigation & Brand Header -->
+  <header class="sticky top-0 z-30 bg-cream/95 backdrop-blur-md border-b border-stone-200/80">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <!-- Brand Logo: LIV100 -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-forest text-cream flex items-center justify-center shadow-sm">
+            <svg class="w-5 h-5 text-paprika" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+              <path d="M2 17l10 5 10-5"/>
+              <path d="M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="font-display font-extrabold text-2xl tracking-tight text-forest">LIV<span class="text-paprika">100</span></span>
+              <span class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-sand text-pine border border-stone-200">Family of 5</span>
+            </div>
+            <p class="text-xs text-stone-500 font-medium">Zero Sugar · Unprocessed · Whole-Food Kitchen</p>
+          </div>
+        </div>
+
+        <!-- Live Day Pill on Mobile -->
+        <span id="mobileTodayBadge" class="sm:hidden text-xs font-semibold px-2.5 py-1 rounded-full bg-paprika/10 text-paprika">
+          Today
+        </span>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="flex bg-sand p-1 rounded-xl border border-stone-200/70 overflow-x-auto" aria-label="Main Sections">
+        <button onclick="switchTab('menu')" id="tab-menu" class="tab-btn flex-1 sm:flex-initial px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap bg-white text-forest shadow-sm">
+          Today & 7-Day Plan
+        </button>
+        <button onclick="switchTab('grocery')" id="tab-grocery" class="tab-btn flex-1 sm:flex-initial px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap text-stone-600 hover:text-forest">
+          Grocery List <span id="navGroceryCount" class="ml-1 text-[11px] px-1.5 py-0.5 rounded-full bg-stone-200/80 text-forest">0/0</span>
+        </button>
+        <button onclick="switchTab('prep')" id="tab-prep" class="tab-btn flex-1 sm:flex-initial px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap text-stone-600 hover:text-forest">
+          Sunday Batch Prep
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+
+    <!-- ========================================== -->
+    <!-- SECTION 1: TODAY'S MENU & 7-DAY MEAL PLAN  -->
+    <!-- ========================================== -->
+    <section id="section-menu" class="space-y-8">
+      
+      <!-- Featured Active Day Banner -->
+      <div class="bg-forest text-cream rounded-3xl p-5 sm:p-8 shadow-lg relative overflow-hidden">
+        <div class="absolute -right-12 -top-12 w-48 h-48 rounded-full bg-paprika/20 blur-2xl pointer-events-none"></div>
+        <div class="relative z-10">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <div class="flex items-center gap-2">
+              <span id="featuredBadge" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-paprika text-white">
+                Serving Today
+              </span>
+              <span id="featuredDateLabel" class="text-sm text-stone-300 font-medium"></span>
+            </div>
+            <button id="jumpToTodayBtn" onclick="selectToday()" class="hidden text-xs font-semibold px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-cream transition">
+              Back to Actual Today
+            </button>
+          </div>
+
+          <h1 id="featuredDayTitle" class="font-display text-2xl sm:text-3xl font-extrabold tracking-tight mb-1">
+            Monday's Family Menu
+          </h1>
+          <p class="text-stone-300 text-sm mb-6">Prepared for 5 · Real butter, extra-virgin olive oil, smoked paprika & whole ingredients.</p>
+
+          <!-- 3 Meal Cards for Selected Day -->
+          <div id="featuredMealsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Populated dynamically via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 7-Day Selector & Full Overview -->
+      <div>
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 mb-4">
+          <div>
+            <h2 class="font-display text-xl font-bold text-forest">Full 7-Day Family Schedule</h2>
+            <p class="text-sm text-stone-500">Tap any day below to preview what the family is eating.</p>
+          </div>
+          <div class="flex items-center gap-2 text-xs text-stone-500">
+            <span class="inline-block w-2.5 h-2.5 rounded-full bg-paprika"></span> Actual Today
+            <span class="inline-block w-2.5 h-2.5 rounded-full bg-forest ml-2"></span> Viewing
+          </div>
+        </div>
+
+        <!-- Horizontal Day Selector Pills -->
+        <div id="daySelectorBar" class="grid grid-cols-7 gap-1.5 sm:gap-2.5 mb-6">
+          <!-- Populated dynamically via JS -->
+        </div>
+
+        <!-- Full Week Reference Cards -->
+        <div id="allDaysList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 2: INTERACTIVE GROCERY CHECKLIST   -->
+    <!-- ========================================== -->
+    <section id="section-grocery" class="hidden space-y-6">
+      
+      <!-- Top Control & Progress Card -->
+      <div class="bg-white rounded-3xl p-5 sm:p-7 border border-stone-200/80 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+          <div>
+            <h1 class="font-display text-2xl font-extrabold text-forest">Family of 5 Shopping List</h1>
+            <p class="text-sm text-stone-500 mt-0.5">Tick items off in the shop. Your progress saves automatically on this device.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="openResetModal()" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold border border-stone-300 text-stone-700 hover:bg-stone-100 hover:text-forest transition flex items-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              </svg>
+              Reset All Checkboxes
+            </button>
+          </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="space-y-2">
+          <div class="flex justify-between text-xs font-semibold">
+            <span class="text-stone-600">Shopping Progress</span>
+            <span id="groceryProgressText" class="text-paprika">0 of 0 items ticked (0%)</span>
+          </div>
+          <div class="w-full h-3 bg-sand rounded-full overflow-hidden">
+            <div id="groceryProgressBar" class="h-full bg-paprika transition-all duration-300 rounded-full" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- Add Custom Ingredient Form -->
+        <form id="addIngredientForm" onsubmit="handleAddIngredient(event)" class="mt-6 pt-5 border-t border-stone-100 flex flex-col sm:flex-row gap-2.5">
+          <input 
+            type="text" 
+            id="newIngredientName" 
+            placeholder="Add an extra item (e.g., 2 bags spinach, sparkling water)..." 
+            required
+            class="flex-1 px-4 py-3 rounded-xl bg-cream border border-stone-200 text-sm text-forest placeholder-stone-400 focus:outline-none focus:border-paprika focus:ring-2 focus:ring-paprika/20"
+          />
+          <select 
+            id="newIngredientCategory" 
+            class="px-4 py-3 rounded-xl bg-cream border border-stone-200 text-sm font-medium text-forest focus:outline-none focus:border-paprika"
+          >
+            <option value="Proteins & Fish">Proteins & Fish</option>
+            <option value="Vegetables & Salad">Vegetables & Salad</option>
+            <option value="Grains & Oats">Grains & Oats</option>
+            <option value="Dairy & Fats">Dairy & Fats</option>
+            <option value="Pantry & Spices">Pantry & Spices</option>
+          </select>
+          <button 
+            type="submit" 
+            class="px-5 py-3 rounded-xl bg-forest hover:bg-pine text-white text-sm font-semibold transition shadow-sm whitespace-nowrap"
+          >
+            + Add Item
+          </button>
+        </form>
+      </div>
+
+      <!-- Categorized Checklist Container -->
+      <div id="groceryCategoriesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <!-- Populated dynamically via JS -->
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 3: SUNDAY BATCH-COOKING GUIDE      -->
+    <!-- ========================================== -->
+    <section id="section-prep" class="hidden space-y-6">
+      <div class="bg-white rounded-3xl p-5 sm:p-7 border border-stone-200/80 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-paprika">2-Hour Family Prep</span>
+            <h1 class="font-display text-2xl font-extrabold text-forest mt-0.5">Sunday Batch-Cooking Guide (Family of 5)</h1>
+            <p class="text-sm text-stone-500 mt-1">Tick off each prep stage as you cook. Weekday dinners will take under 15 minutes.</p>
+          </div>
+          <button onclick="resetPrepSteps()" class="self-start sm:self-center px-4 py-2 rounded-xl text-xs font-semibold border border-stone-300 text-stone-700 hover:bg-stone-100 transition">
+            Reset Prep Steps
+          </button>
+        </div>
+      </div>
+
+      <div id="prepStepsContainer" class="space-y-4">
+        <!-- Populated dynamically via JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Custom Reset Confirmation Modal (No browser confirm/alert used) -->
+  <div id="resetModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-forest/60 backdrop-blur-xs p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200">
+      <div class="w-12 h-12 rounded-2xl bg-paprika/10 text-paprika flex items-center justify-center mb-4">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+      </div>
+      <h3 class="font-display text-xl font-bold text-forest">Reset weekly shopping list?</h3>
+      <p class="text-sm text-stone-600 mt-2 leading-relaxed">
+        This will untick all ingredients so you are ready for a fresh weekly shop. Any custom items you added will stay on your list.
+      </p>
+      <div class="mt-6 flex items-center justify-end gap-2.5">
+        <button onclick="closeResetModal()" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-stone-600 hover:bg-stone-100 transition">
+          Cancel
+        </button>
+        <button onclick="confirmResetGroceries()" class="px-5 py-2.5 rounded-xl text-sm font-semibold bg-paprika hover:bg-paprikaDark text-white transition shadow-sm">
+          Yes, Untick Everything
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="bg-forest text-cream px-4 py-3 rounded-2xl shadow-lg text-sm font-medium flex items-center gap-2 border border-pine">
+      <span class="w-2 h-2 rounded-full bg-paprika"></span>
+      <span id="toastMessage">Saved</span>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-stone-200/80 py-6 mt-12">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-stone-500">
+      <span class="font-display font-bold text-forest">LIV<span class="text-paprika">100</span> · Family Kitchen Hub</span>
+      <span>100% Whole Foods · Zero Added Sugar · Zero Seed Oils</span>
+    </div>
+  </footer>
+
+  <script>
+    // ==========================================
+    // DATA: 7-DAY MEAL PLAN (FAMILY OF 5)
+    // ==========================================
+    const MEAL_PLAN = [
+      {
+        dayIndex: 1, // Monday
+        name: "Monday",
+        short: "Mon",
+        theme: "Smoked Paprika Chicken & Butter Salmon",
+        breakfast: {
+          title: "Eggs & Avocado",
+          desc: "Eggs cooked in real butter, dusted with smoked paprika, served with sliced avocado, sea salt, and cracked black pepper."
+        },
+        lunch: {
+          title: "Smoked Paprika Chicken & Crisp Salad",
+          desc: "Prepped smoked paprika chicken breast sliced over mixed leaves, cucumber, and raw red bell pepper strips with extra-virgin olive oil & lemon."
+        },
+        dinner: {
+          title: "Butter-Roasted Salmon & Cauliflower",
+          desc: "5 salmon fillets baked in melted butter alongside golden cauliflower florets roasted with smoked paprika and garlic powder."
+        }
+      },
+      {
+        dayIndex: 2, // Tuesday
+        name: "Tuesday",
+        short: "Tue",
+        theme: "Giant Couscous & Garlic-Butter Steak",
+        breakfast: {
+          title: "Overnight Oats & Fresh Berries",
+          desc: "Rolled oats soaked in unsweetened milk with chia seeds, cinnamon, and fresh berries (zero honey or syrups)."
+        },
+        lunch: {
+          title: "Salmon & Giant Couscous Salad",
+          desc: "Flaked paprika-roasted salmon tossed with buttery giant couscous, diced cucumber, red bell pepper, fresh parsley, and lemon juice."
+        },
+        dinner: {
+          title: "Garlic-Butter Steak, Rice & Courgettes",
+          desc: "Pan-seared steaks basted in butter with a pinch of smoked paprika, served with fluffy steamed rice and pan-fried courgettes."
+        }
+      },
+      {
+        dayIndex: 3, // Wednesday
+        name: "Wednesday",
+        short: "Wed",
+        theme: "Sweet Potato Bowls & Crispy Sea Bass",
+        breakfast: {
+          title: "Scrambled Eggs & Smashed Avocado",
+          desc: "Creamy eggs scrambled gently in butter with smoked paprika folded in, served with smashed avocado on the side."
+        },
+        lunch: {
+          title: "Paprika Chicken & Sweet Potato Bowl",
+          desc: "Diced smoked paprika chicken breast with roasted sweet potato cubes, charred red bell peppers, and fresh baby spinach."
+        },
+        dinner: {
+          title: "Crispy Sea Bass, Giant Couscous & Cauliflower",
+          desc: "Pan-seared crispy-skin sea bass fillets seasoned with smoked paprika, served over giant couscous and paprika-roasted cauliflower."
+        }
+      },
+      {
+        dayIndex: 4, // Thursday
+        name: "Thursday",
+        short: "Thu",
+        theme: "Baby Potato Salad & Stuffed Peppers",
+        breakfast: {
+          title: "Overnight Oats, Walnuts & Apple",
+          desc: "Rolled oats soaked with unsweetened Greek yogurt, crushed walnuts, cinnamon, and freshly grated apple for natural sweetness."
+        },
+        lunch: {
+          title: "Tuna, Baby Potato & Olive Salad",
+          desc: "Tinned tuna in olive oil tossed with baby potatoes seasoned with smoked paprika, boiled eggs, olives, and mixed salad greens."
+        },
+        dinner: {
+          title: "Smoked Paprika Lamb Stuffed Red Peppers",
+          desc: "Lean lamb mince browned with onions, garlic, and smoked paprika, baked inside halved red bell peppers alongside roasted courgettes."
+        }
+      },
+      {
+        dayIndex: 5, // Friday
+        name: "Friday",
+        short: "Fri",
+        theme: "Baked Cod & Paprika Cauliflower Mash",
+        breakfast: {
+          title: "Fried Eggs, Avocado & Mushrooms",
+          desc: "Eggs fried in butter with a dusting of smoked paprika, served alongside sliced avocado and pan-sautéed chestnut mushrooms."
+        },
+        lunch: {
+          title: "Paprika Chicken & Giant Couscous Bowl",
+          desc: "Sliced grilled chicken breast over warm giant couscous tossed with smoked paprika-roasted red bell peppers, courgettes, and olive oil."
+        },
+        dinner: {
+          title: "Baked Cod, Rice & Paprika Cauliflower Mash",
+          desc: "Herb & smoked paprika baked cod loins served with steamed rice and velvety cauliflower blended with butter and smoked paprika."
+        }
+      },
+      {
+        dayIndex: 6, // Saturday
+        name: "Saturday",
+        short: "Sat",
+        theme: "One-Tray Smoked Paprika Chicken Thighs",
+        breakfast: {
+          title: "Overnight Oats, Seeds & Blueberries",
+          desc: "Rolled oats soaked in unsweetened almond or dairy milk with flaxseeds, pumpkin seeds, cinnamon, and fresh blueberries."
+        },
+        lunch: {
+          title: "Warm Spiced Lamb & Courgette Salad",
+          desc: "Leftover smoked paprika lamb mince served over griddled courgette ribbons, diced cucumber, fresh mint, and lemon dressing."
+        },
+        dinner: {
+          title: "Smoked Paprika Roast Chicken Thighs & Rice",
+          desc: "Crispy skin-on chicken thighs rubbed with smoked paprika and garlic, roasted alongside fluffy rice, red bell pepper strips, and courgettes."
+        }
+      },
+      {
+        dayIndex: 0, // Sunday
+        name: "Sunday",
+        short: "Sun",
+        theme: "Garlic & Paprika King Prawns",
+        breakfast: {
+          title: "3-Egg Pepper & Courgette Omelette",
+          desc: "Fluffy omelette folded with smoked paprika, diced red bell pepper, courgette, and spinach, served with sliced avocado."
+        },
+        lunch: {
+          title: "Sardines & Mediterranean Veg Salad",
+          desc: "Grilled or olive-oil sardines dusted with smoked paprika, served with ripe tomatoes, red bell peppers, red onion, basil, and rocket."
+        },
+        dinner: {
+          title: "Garlic & Paprika Prawns, Giant Couscous & Courgette",
+          desc: "King prawns sautéed quickly in butter, garlic, smoked paprika, and chilli flakes, tossed with giant couscous and pan-fried courgettes."
+        }
+      }
+    ];
+
+    // ==========================================
+    // DATA: DEFAULT GROCERY LIST (FAMILY OF 5)
+    // ==========================================
+    const DEFAULT_GROCERIES = [
+      // Proteins & Fish
+      { id: "p1", name: "10–12 Chicken breasts (approx. 2.5–3 kg)", category: "Proteins & Fish", checked: false, custom: false },
+      { id: "p2", name: "8–10 Skin-on chicken thighs", category: "Proteins & Fish", checked: false, custom: false },
+      { id: "p3", name: "5 Salmon fillets", category: "Proteins & Fish", checked: false, custom: false },
+      { id: "p4", name: "5 Sea bass fillets (skin-on)", category: "Proteins & Fish", checked: false, custom: false },
+      { id: "p5", name: "5 Cod loins", category: "Proteins & Fish", checked: false, custom: false },
+      { id: "p6", name: "1 kg Lean lamb mince", category: "Proteins & Fish", checked: false, custom: false },
+      { id: "p7", name: "5 Steaks (sirloin or ribeye)", category: "Proteins & Fish", checked: false, custom: false },
+      { id: "p8", name: "750g–1 kg Raw king prawns", category: "Proteins & Fish", checked: false, custom: false },
+      { id: "p9", name: "30 Free-range eggs (for breakfasts & lunches)", category: "Proteins & Fish", checked: false, custom: false },
+      { id: "p10", name: "4–5 Tins tuna in olive oil / spring water", category: "Proteins & Fish", checked: false, custom: false },
+      { id: "p11", name: "4–5 Tins sardines in olive oil (or fresh)", category: "Proteins & Fish", checked: false, custom: false },
+
+      // Vegetables & Salad
+      { id: "v1", name: "3 Large heads of cauliflower", category: "Vegetables & Salad", checked: false, custom: false },
+      { id: "v2", name: "10–12 Red bell peppers", category: "Vegetables & Salad", checked: false, custom: false },
+      { id: "v3", name: "10–12 Courgettes", category: "Vegetables & Salad", checked: false, custom: false },
+      { id: "v4", name: "1.5 kg Baby / small potatoes", category: "Vegetables & Salad", checked: false, custom: false },
+      { id: "v5", name: "1.5 kg Sweet potatoes", category: "Vegetables & Salad", checked: false, custom: false },
+      { id: "v6", name: "8–10 Ripe avocados", category: "Vegetables & Salad", checked: false, custom: false },
+      { id: "v7", name: "3 Bags mixed salad leaves, spinach & rocket", category: "Vegetables & Salad", checked: false, custom: false },
+      { id: "v8", name: "2 Cucumbers & 2 punnets cherry tomatoes", category: "Vegetables & Salad", checked: false, custom: false },
+      { id: "v9", name: "Chestnut mushrooms, onions & garlic bulbs", category: "Vegetables & Salad", checked: false, custom: false },
+      { id: "v10", name: "Fresh lemons, parsley, mint & basil", category: "Vegetables & Salad", checked: false, custom: false },
+      { id: "v11", name: "Fresh berries (blueberries/strawberries) & apples", category: "Vegetables & Salad", checked: false, custom: false },
+
+      // Grains & Oats
+      { id: "g1", name: "1 Large bag giant couscous (pearl couscous)", category: "Grains & Oats", checked: false, custom: false },
+      { id: "g2", name: "1 Bag basmati or brown rice", category: "Grains & Oats", checked: false, custom: false },
+      { id: "g3", name: "1 Large bag whole rolled oats", category: "Grains & Oats", checked: false, custom: false },
+
+      // Dairy & Fats
+      { id: "d1", name: "2–3 Blocks real salted/unsalted butter", category: "Dairy & Fats", checked: false, custom: false },
+      { id: "d2", name: "Extra-virgin olive oil", category: "Dairy & Fats", checked: false, custom: false },
+      { id: "d3", name: "Unsweetened Greek yogurt", category: "Dairy & Fats", checked: false, custom: false },
+      { id: "d4", name: "Unsweetened milk (dairy or almond)", category: "Dairy & Fats", checked: false, custom: false },
+
+      // Pantry & Spices
+      { id: "s1", name: "Large jar Smoked Paprika (essential!)", category: "Pantry & Spices", checked: false, custom: false },
+      { id: "s2", name: "Garlic powder, cumin, oregano & chilli flakes", category: "Pantry & Spices", checked: false, custom: false },
+      { id: "s3", name: "Ground cinnamon (for overnight oats)", category: "Pantry & Spices", checked: false, custom: false },
+      { id: "s4", name: "Chia seeds, flaxseeds, pumpkin seeds & walnuts", category: "Pantry & Spices", checked: false, custom: false },
+      { id: "s5", name: "Pitted olives, sea salt & black peppercorns", category: "Pantry & Spices", checked: false, custom: false }
+    ];
+
+    // ==========================================
+    // DATA: SUNDAY BATCH-COOKING STEPS
+    // ==========================================
+    const PREP_STEPS = [
+      {
+        id: "prep1",
+        stepNum: "01",
+        badge: "Oven 200°C (400°F) · 2 Large Trays",
+        title: "Roast Baby Potatoes, Sweet Potatoes & Red Bell Peppers",
+        details: "Cube 1.5 kg sweet potatoes, halve 1.5 kg baby potatoes, and slice 4–5 red bell peppers into thick strips. Toss across two large baking sheets with extra-virgin olive oil, sea salt, black pepper, and a generous coat of smoked paprika. Roast for 30–35 minutes until golden and tender."
+      },
+      {
+        id: "prep2",
+        stepNum: "02",
+        badge: "Oven 200°C (400°F) · 2 Trays",
+        title: "Butter-Roast 3 Heads of Cauliflower with Smoked Paprika",
+        details: "Cut 3 large cauliflowers into bite-sized florets. Toss in melted butter heavily seasoned with smoked paprika, garlic powder, and salt. Spread across two trays without overcrowding so the edges caramelize instead of steaming. Roast for 20–25 minutes."
+      },
+      {
+        id: "prep3",
+        stepNum: "03",
+        badge: "Stovetop · Large Pots",
+        title: "Simmer Giant Couscous & Fluffy Rice",
+        details: "Cook 2 large cups of dry rice in salted water (simmer covered for 12 mins, then fluff). Separately, boil 2 large cups of giant couscous in salted water for 8–10 minutes until tender with a slight bite. Drain couscous and immediately toss with butter or olive oil so the pearls stay separate."
+      },
+      {
+        id: "prep4",
+        stepNum: "04",
+        badge: "Oven 200°C (400°F) · Mass Batch-Roast",
+        title: "Season & Bake 10–12 Chicken Breasts + Courgettes",
+        details: "Pat 10–12 chicken breasts dry and rub generously with olive oil, smoked paprika, garlic powder, salt, and pepper. Slice 5 courgettes and 4 red bell peppers onto trays alongside the chicken. Roast for 20–25 minutes until cooked through (74°C / 165°F). Cool before slicing."
+      },
+      {
+        id: "prep5",
+        stepNum: "05",
+        badge: "Storage & Weekday Strategy",
+        title: "Cool, Stack & Keep Fish Fresh for Quick Sear/Bake",
+        details: "Allow all roasted veggies, grains, and chicken to cool completely before sealing in family-sized airtight containers. Keep salmon, sea bass, cod, steaks, and prawns raw in the fridge—they cook fresh in under 10 minutes and pair straight out of your prepped containers."
+      }
+    ];
+
+    // ==========================================
+    // STATE & LOCAL STORAGE
+    // ==========================================
+    const STORAGE_KEYS = {
+      GROCERIES: 'liv100_groceries_v1',
+      PREP: 'liv100_prep_v1'
+    };
+
+    let groceries = [];
+    let completedPrep = {};
+    let actualTodayIndex = new Date().getDay(); // 0 = Sun, 1 = Mon ... 6 = Sat
+    let selectedDayIndex = actualTodayIndex;
+
+    function loadState() {
+      try {
+        const savedGroceries = localStorage.getItem(STORAGE_KEYS.GROCERIES);
+        groceries = savedGroceries ? JSON.parse(savedGroceries) : JSON.parse(JSON.stringify(DEFAULT_GROCERIES));
+      } catch (e) {
+        groceries = JSON.parse(JSON.stringify(DEFAULT_GROCERIES));
+      }
+
+      try {
+        const savedPrep = localStorage.getItem(STORAGE_KEYS.PREP);
+        completedPrep = savedPrep ? JSON.parse(savedPrep) : {};
+      } catch (e) {
+        completedPrep = {};
+      }
+    }
+
+    function saveGroceries() {
+      try {
+        localStorage.setItem(STORAGE_KEYS.GROCERIES, JSON.stringify(groceries));
+      } catch (e) {}
+      updateGroceryCounters();
+    }
+
+    function savePrep() {
+      try {
+        localStorage.setItem(STORAGE_KEYS.PREP, JSON.stringify(completedPrep));
+      } catch (e) {}
+    }
+
+    // ==========================================
+    // TAB NAVIGATION
+    // ==========================================
+    function switchTab(tabName) {
+      const sections = ['menu', 'grocery', 'prep'];
+      sections.forEach(sec => {
+        const el = document.getElementById(`section-${sec}`);
+        const btn = document.getElementById(`tab-${sec}`);
+        if (sec === tabName) {
+          el.classList.remove('hidden');
+          btn.classList.add('bg-white', 'text-forest', 'shadow-sm');
+          btn.classList.remove('text-stone-600');
+        } else {
+          el.classList.add('hidden');
+          btn.classList.remove('bg-white', 'text-forest', 'shadow-sm');
+          btn.classList.add('text-stone-600');
+        }
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ==========================================
+    // RENDER: MEAL PLAN & TODAY HIGHLIGHT
+    // ==========================================
+    function selectDay(dayIdx) {
+      selectedDayIndex = dayIdx;
+      renderMenuSection();
+    }
+
+    function selectToday() {
+      selectedDayIndex = actualTodayIndex;
+      renderMenuSection();
+    }
+
+    function renderMenuSection() {
+      const selectedDay = MEAL_PLAN.find(d => d.dayIndex === selectedDayIndex) || MEAL_PLAN[0];
+      const isActualToday = selectedDayIndex === actualTodayIndex;
+      const actualTodayObj = MEAL_PLAN.find(d => d.dayIndex === actualTodayIndex) || MEAL_PLAN[0];
+
+      // Mobile badge
+      document.getElementById('mobileTodayBadge').textContent = `Today: ${actualTodayObj.short}`;
+
+      // Featured Banner Header
+      const badge = document.getElementById('featuredBadge');
+      const jumpBtn = document.getElementById('jumpToTodayBtn');
+      const dateLabel = document.getElementById('featuredDateLabel');
+
+      if (isActualToday) {
+        badge.textContent = "Serving Today";
+        badge.className = "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-paprika text-white";
+        jumpBtn.classList.add('hidden');
+        const options = { weekday: 'long', month: 'short', day: 'numeric' };
+        dateLabel.textContent = new Date().toLocaleDateString(undefined, options);
+      } else {
+        badge.textContent = `Previewing ${selectedDay.name}`;
+        badge.className = "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amberWarm text-white";
+        jumpBtn.classList.remove('hidden');
+        dateLabel.textContent = selectedDay.theme;
+      }
+
+      document.getElementById('featuredDayTitle').textContent = `${selectedDay.name}'s Family Menu`;
+
+      // Featured 3 Meal Cards
+      const mealsGrid = document.getElementById('featuredMealsGrid');
+      const meals = [
+        { label: "Breakfast", time: "Morning", data: selectedDay.breakfast },
+        { label: "Lunch", time: "Midday", data: selectedDay.lunch },
+        { label: "Dinner", time: "Evening", data: selectedDay.dinner }
+      ];
+
+      mealsGrid.innerHTML = meals.map(m => `
+        <div class="bg-pine/90 border border-white/10 rounded-2xl p-4 sm:p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span class="text-[11px] font-bold uppercase tracking-widest text-paprika bg-paprika/15 px-2.5 py-0.5 rounded-full">
+                ${m.label}
+              </span>
+              <span class="text-xs text-stone-400">${m.time}</span>
+            </div>
+            <h3 class="font-display font-bold text-lg text-white leading-snug mb-2">
+              ${m.data.title}
+            </h3>
+            <p class="text-sm text-stone-300 leading-relaxed">
+              ${m.data.desc}
+            </p>
+          </div>
+        </div>
+      `).join('');
+
+      // Horizontal Day Selector Pills (Mon -> Sun order)
+      const selectorBar = document.getElementById('daySelectorBar');
+      selectorBar.innerHTML = MEAL_PLAN.map(day => {
+        const isToday = day.dayIndex === actualTodayIndex;
+        const isSelected = day.dayIndex === selectedDayIndex;
+        let btnClasses = "relative flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border text-center transition cursor-pointer ";
+        if (isSelected) {
+          btnClasses += "bg-forest text-white border-forest shadow-sm";
+        } else {
+          btnClasses += "bg-white text-forest border-stone-200 hover:border-paprika/50";
+        }
+        return `
+          <button onclick="selectDay(${day.dayIndex})" class="${btnClasses}">
+            ${isToday ? `<span class="absolute -top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-paprika ring-2 ring-cream" title="Today"></span>` : ''}
+            <span class="text-xs sm:text-sm font-bold">${day.short}</span>
+            <span class="text-[10px] ${isSelected ? 'text-stone-300' : 'text-stone-400'} hidden sm:block mt-0.5 truncate max-w-full px-1">
+              ${isToday ? 'Today' : day.name}
+            </span>
+          </button>
+        `;
+      }).join('');
+
+      // Full Week Cards Grid
+      const allDaysList = document.getElementById('allDaysList');
+      allDaysList.innerHTML = MEAL_PLAN.map(day => {
+        const isToday = day.dayIndex === actualTodayIndex;
+        const isSelected = day.dayIndex === selectedDayIndex;
+        return `
+          <div onclick="selectDay(${day.dayIndex})" class="cursor-pointer rounded-2xl p-5 border transition ${isSelected ? 'bg-white border-forest ring-2 ring-forest/10 shadow-sm' : 'bg-white/80 border-stone-200/80 hover:bg-white hover:border-stone-300'}">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <h3 class="font-display font-bold text-lg text-forest">${day.name}</h3>
+                ${isToday ? `<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-paprika text-white">Today</span>` : ''}
+              </div>
+              <span class="text-xs font-medium text-stone-400">Tap to focus</span>
+            </div>
+            <div class="space-y-2.5 text-xs sm:text-sm">
+              <div class="p-2.5 rounded-xl bg-cream">
+                <span class="font-bold text-stone-500 uppercase text-[10px] tracking-wider block">Breakfast</span>
+                <span class="font-semibold text-forest">${day.breakfast.title}</span>
+              </div>
+              <div class="p-2.5 rounded-xl bg-cream">
+                <span class="font-bold text-stone-500 uppercase text-[10px] tracking-wider block">Lunch</span>
+                <span class="font-semibold text-forest">${day.lunch.title}</span>
+              </div>
+              <div class="p-2.5 rounded-xl bg-sand/70">
+                <span class="font-bold text-paprika uppercase text-[10px] tracking-wider block">Dinner</span>
+                <span class="font-semibold text-forest">${day.dinner.title}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ==========================================
+    // RENDER & LOGIC: GROCERY CHECKLIST
+    // ==========================================
+    const CATEGORIES_ORDER = [
+      "Proteins & Fish",
+      "Vegetables & Salad",
+      "Grains & Oats",
+      "Dairy & Fats",
+      "Pantry & Spices"
+    ];
+
+    function updateGroceryCounters() {
+      const total = groceries.length;
+      const checked = groceries.filter(i => i.checked).length;
+      const pct = total === 0 ? 0 : Math.round((checked / total) * 100);
+
+      document.getElementById('navGroceryCount').textContent = `${checked}/${total}`;
+      document.getElementById('groceryProgressText').textContent = `${checked} of ${total} items ticked (${pct}%)`;
+      document.getElementById('groceryProgressBar').style.width = `${pct}%`;
+    }
+
+    function toggleGroceryItem(id) {
+      const item = groceries.find(i => i.id === id);
+      if (item) {
+        item.checked = !item.checked;
+        saveGroceries();
+        renderGrocerySection();
+      }
+    }
+
+    function handleAddIngredient(e) {
+      e.preventDefault();
+      const nameInput = document.getElementById('newIngredientName');
+      const catSelect = document.getElementById('newIngredientCategory');
+      const cleanName = nameInput.value.trim();
+      if (!cleanName) return;
+
+      groceries.unshift({
+        id: 'custom_' + Date.now(),
+        name: cleanName,
+        category: catSelect.value,
+        checked: false,
+        custom: true
+      });
+
+      nameInput.value = '';
+      saveGroceries();
+      renderGrocerySection();
+      showToast(`Added "${cleanName}" to ${catSelect.value}`);
+    }
+
+    function deleteCustomIngredient(id, event) {
+      event.stopPropagation();
+      groceries = groceries.filter(i => i.id !== id);
+      saveGroceries();
+      renderGrocerySection();
+      showToast('Custom item removed');
+    }
+
+    function openResetModal() {
+      const modal = document.getElementById('resetModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeResetModal() {
+      const modal = document.getElementById('resetModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function confirmResetGroceries() {
+      groceries.forEach(item => item.checked = false);
+      saveGroceries();
+      renderGrocerySection();
+      closeResetModal();
+      showToast('All checkboxes reset for your next shop');
+    }
+
+    function renderGrocerySection() {
+      updateGroceryCounters();
+      const container = document.getElementById('groceryCategoriesContainer');
+
+      container.innerHTML = CATEGORIES_ORDER.map(cat => {
+        const items = groceries.filter(i => i.category === cat);
+        const catChecked = items.filter(i => i.checked).length;
+
+        return `
+          <div class="bg-white rounded-3xl p-5 sm:p-6 border border-stone-200/80 shadow-sm flex flex-col">
+            <div class="flex items-center justify-between pb-3 mb-3 border-b border-stone-100">
+              <h2 class="font-display font-bold text-lg text-forest">${cat}</h2>
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-sand text-stone-600">
+                ${catChecked}/${items.length}
+              </span>
+            </div>
+
+            <ul class="space-y-2 flex-1">
+              ${items.length === 0 ? `<li class="text-xs text-stone-400 italic py-2">No items in this category yet.</li>` : ''}
+              ${items.map(item => `
+                <li 
+                  onclick="toggleGroceryItem('${item.id}')" 
+                  class="group flex items-center justify-between gap-3 p-2.5 rounded-xl cursor-pointer transition select-none ${item.checked ? 'bg-cream/60' : 'hover:bg-cream'}"
+                >
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-5 h-5 rounded-md border flex-shrink-0 flex items-center justify-center transition ${item.checked ? 'bg-paprika border-paprika text-white' : 'border-stone-300 bg-white group-hover:border-paprika'}">
+                      ${item.checked ? `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>` : ''}
+                    </div>
+                    <span class="text-sm leading-snug transition ${item.checked ? 'line-through text-stone-400' : 'text-forest font-medium'}">
+                      ${escapeHtml(item.name)}
+                    </span>
+                    ${item.custom ? `<span class="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-amberWarm/15 text-amberWarm flex-shrink-0">Added</span>` : ''}
+                  </div>
+
+                  ${item.custom ? `
+                    <button 
+                      onclick="deleteCustomIngredient('${item.id}', event)" 
+                      title="Delete custom item"
+                      class="p-1.5 rounded-lg text-stone-400 hover:text-paprika hover:bg-paprika/10 transition flex-shrink-0"
+                    >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                      </svg>
+                    </button>
+                  ` : ''}
+                </li>
+              `).join('')}
+            </ul>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ==========================================
+    // RENDER & LOGIC: SUNDAY BATCH PREP
+    // ==========================================
+    function togglePrepStep(id) {
+      completedPrep[id] = !completedPrep[id];
+      savePrep();
+      renderPrepSection();
+    }
+
+    function resetPrepSteps() {
+      completedPrep = {};
+      savePrep();
+      renderPrepSection();
+      showToast('Batch-cooking steps reset');
+    }
+
+    function renderPrepSection() {
+      const container = document.getElementById('prepStepsContainer');
+      container.innerHTML = PREP_STEPS.map(step => {
+        const isDone = !!completedPrep[step.id];
+        return `
+          <div 
+            onclick="togglePrepStep('${step.id}')" 
+            class="cursor-pointer rounded-3xl p-5 sm:p-6 border transition select-none ${isDone ? 'bg-cream/80 border-stone-200 opacity-75' : 'bg-white border-stone-200/80 shadow-sm hover:border-paprika/50'}"
+          >
+            <div class="flex items-start gap-4">
+              <div class="mt-0.5 w-7 h-7 rounded-xl border-2 flex-shrink-0 flex items-center justify-center transition ${isDone ? 'bg-forest border-forest text-white' : 'border-stone-300 bg-cream'}">
+                ${isDone ? `<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>` : `<span class="text-xs font-bold text-stone-500">${step.stepNum}</span>`}
+              </div>
+              <div class="flex-1">
+                <div class="flex flex-wrap items-center gap-2 mb-1.5">
+                  <span class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-sand text-pine">
+                    ${step.badge}
+                  </span>
+                  ${isDone ? `<span class="text-xs font-semibold text-forest">Completed</span>` : ''}
+                </div>
+                <h3 class="font-display font-bold text-lg ${isDone ? 'line-through text-stone-400' : 'text-forest'}">
+                  ${step.title}
+                </h3>
+                <p class="text-sm text-stone-600 mt-1.5 leading-relaxed">
+                  ${step.details}
+                </p>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ==========================================
+    // UTILITIES
+    // ==========================================
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    let toastTimeout;
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMessage').textContent = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 2600);
+    }
+
+    // ==========================================
+    // INIT
+    // ==========================================
+    window.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      renderMenuSection();
+      renderGrocerySection();
+      renderPrepSection();
+    });
+  </script>
+</body>
+</html>
