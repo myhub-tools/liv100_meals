@@ -234,6 +234,15 @@
         </form>
       </div>
 
+      <!-- View switch -->
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <p class="text-sm text-stone-500">Two shops a week keeps fish and mince fresh.</p>
+        <div class="inline-flex bg-sand p-1 rounded-xl border border-stone-200/70" role="tablist" aria-label="Sort grocery list">
+          <button type="button" id="viewByDay" onclick="setGroceryView('day')" class="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition">By shopping day</button>
+          <button type="button" id="viewByAisle" onclick="setGroceryView('aisle')" class="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition">By aisle</button>
+        </div>
+      </div>
+
       <!-- Categorized Checklist Container -->
       <div id="groceryCategoriesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-5">
         <!-- Populated dynamically via JS -->
@@ -368,33 +377,45 @@
     ];
 
     // --- INITIAL GROCERY LIST DATA (FAMILY OF 5) ---
+    // shop: 'sun' = main shop on Sunday before batch prep, 'wed' = midweek top-up for fresh food
     const initialGroceryItems = [
-      { id: 'g1', name: '10–12 Chicken Breasts (approx. 2.5–3kg)', category: 'Proteins & Fish', checked: false, custom: false },
-      { id: 'g26', name: '1 Large Whole Chicken (approx. 2kg, for Saturday roast)', category: 'Proteins & Fish', checked: false, custom: false },
-      { id: 'g2', name: '4–5 Salmon Fillets', category: 'Proteins & Fish', checked: false, custom: false },
-      { id: 'g3', name: '4–5 Sea Bass Fillets', category: 'Proteins & Fish', checked: false, custom: false },
-      { id: 'g5', name: '1kg Lean Lamb Mince', category: 'Proteins & Fish', checked: false, custom: false },
-      { id: 'g6', name: '1 Pack Steaks & 1 Pack King Prawns', category: 'Proteins & Fish', checked: false, custom: false },
-      { id: 'g7', name: '1 Tin Tuna in Olive Oil (Only canned item)', category: 'Proteins & Fish', checked: false, custom: false },
-      { id: 'g8', name: '3 Large Heads of Cauliflower', category: 'Vegetables & Salad', checked: false, custom: false },
-      { id: 'g9', name: '1.5kg Baby Potatoes & 1.5kg Sweet Potatoes', category: 'Vegetables & Salad', checked: false, custom: false },
-      { id: 'g27', name: '4 Onions (brown for Thursday lamb, red for Friday traybake)', category: 'Vegetables & Salad', checked: false, custom: false },
-      { id: 'g10', name: '8–10 Red Bell Peppers', category: 'Vegetables & Salad', checked: false, custom: false },
-      { id: 'g11', name: '8–10 Courgettes', category: 'Vegetables & Salad', checked: false, custom: false },
-      { id: 'g12', name: 'Fresh Ripe Tomatoes (for Day 7 stew)', category: 'Vegetables & Salad', checked: false, custom: false },
-      { id: 'g13', name: 'Mixed Salad Leaves, Cucumbers & Spinach', category: 'Vegetables & Salad', checked: false, custom: false },
-      { id: 'g14', name: 'Chestnut Mushrooms & Fresh Herbs (Parsley/Mint)', category: 'Vegetables & Salad', checked: false, custom: false },
-      { id: 'g15', name: '2 Bags Rolled Oats', category: 'Grains & Oats', checked: false, custom: false },
-      { id: 'g16', name: '2 Large Packs Giant Couscous', category: 'Grains & Oats', checked: false, custom: false },
-      { id: 'g17', name: '2kg Basmati or Brown Rice', category: 'Grains & Oats', checked: false, custom: false },
-      { id: 'g18', name: 'Real Butter (Large Blocks)', category: 'Dairy & Fats', checked: false, custom: false },
-      { id: 'g19', name: 'Extra-Virgin Olive Oil', category: 'Dairy & Fats', checked: false, custom: false },
-      { id: 'g20', name: 'Eggs (3–4 dozen for family)', category: 'Dairy & Fats', checked: false, custom: false },
-      { id: 'g21', name: 'Unsweetened Greek Yogurt & Almond/Dairy Milk', category: 'Dairy & Fats', checked: false, custom: false },
-      { id: 'g22', name: 'Avocados (5–6 ripe)', category: 'Dairy & Fats', checked: false, custom: false },
-      { id: 'g23', name: 'Smoked Paprika (Large tin/pack)', category: 'Pantry & Spices', checked: false, custom: false },
-      { id: 'g24', name: 'Garlic Powder, Cumin, Salt & Black Pepper', category: 'Pantry & Spices', checked: false, custom: false },
-      { id: 'g25', name: 'Chia Seeds, Flaxseeds, Walnuts & Fresh Berries', category: 'Pantry & Spices', checked: false, custom: false }
+      { id: 'g1', name: '10–12 Chicken Breasts (approx. 2.5–3kg)', category: 'Proteins & Fish', shop: 'sun', checked: false, custom: false },
+      { id: 'g2', name: '4–5 Salmon Fillets', category: 'Proteins & Fish', shop: 'sun', checked: false, custom: false },
+      { id: 'g6', name: '5 Steaks', category: 'Proteins & Fish', shop: 'sun', checked: false, custom: false },
+      { id: 'g7', name: '1 Tin Tuna in Olive Oil (Only canned item)', category: 'Proteins & Fish', shop: 'sun', checked: false, custom: false },
+      { id: 'g8', name: '3 Large Heads of Cauliflower', category: 'Vegetables & Salad', shop: 'sun', checked: false, custom: false },
+      { id: 'g9', name: '1.5kg Baby Potatoes & 1.5kg Sweet Potatoes', category: 'Vegetables & Salad', shop: 'sun', checked: false, custom: false },
+      { id: 'g10', name: '8–10 Red Bell Peppers', category: 'Vegetables & Salad', shop: 'sun', checked: false, custom: false },
+      { id: 'g11', name: '8–10 Courgettes', category: 'Vegetables & Salad', shop: 'sun', checked: false, custom: false },
+      { id: 'g27', name: '4 Onions (brown for Thursday lamb, red for Friday traybake)', category: 'Vegetables & Salad', shop: 'sun', checked: false, custom: false },
+      { id: 'g29', name: '2 Bulbs Fresh Garlic', category: 'Vegetables & Salad', shop: 'sun', checked: false, custom: false },
+      { id: 'g28', name: '4 Lemons', category: 'Vegetables & Salad', shop: 'sun', checked: false, custom: false },
+      { id: 'g13', name: 'Mixed Salad Leaves, Cucumber & Spinach (for Mon–Wed)', category: 'Vegetables & Salad', shop: 'sun', checked: false, custom: false },
+      { id: 'g14', name: 'Fresh Parsley (for Tuesday lunch)', category: 'Vegetables & Salad', shop: 'sun', checked: false, custom: false },
+      { id: 'g25b', name: 'Fresh Berries (for Tuesday oats)', category: 'Vegetables & Salad', shop: 'sun', checked: false, custom: false },
+      { id: 'g22', name: 'Avocados for Mon & Wed (3, mix of ripe and firm)', category: 'Dairy & Fats', shop: 'sun', checked: false, custom: false },
+      { id: 'g15', name: '2 Bags Rolled Oats', category: 'Grains & Oats', shop: 'sun', checked: false, custom: false },
+      { id: 'g16', name: '2 Large Packs Giant Couscous', category: 'Grains & Oats', shop: 'sun', checked: false, custom: false },
+      { id: 'g17', name: '2kg Basmati or Brown Rice', category: 'Grains & Oats', shop: 'sun', checked: false, custom: false },
+      { id: 'g18', name: 'Real Butter (Large Blocks)', category: 'Dairy & Fats', shop: 'sun', checked: false, custom: false },
+      { id: 'g19', name: 'Extra-Virgin Olive Oil', category: 'Dairy & Fats', shop: 'sun', checked: false, custom: false },
+      { id: 'g20', name: 'Eggs (3–4 dozen)', category: 'Dairy & Fats', shop: 'sun', checked: false, custom: false },
+      { id: 'g21', name: 'Unsweetened Greek Yogurt & Almond/Dairy Milk', category: 'Dairy & Fats', shop: 'sun', checked: false, custom: false },
+      { id: 'g23', name: 'Smoked Paprika (Large tin/pack)', category: 'Pantry & Spices', shop: 'sun', checked: false, custom: false },
+      { id: 'g24', name: 'Garlic Powder, Cumin, Salt & Black Pepper', category: 'Pantry & Spices', shop: 'sun', checked: false, custom: false },
+      { id: 'g32', name: 'Cinnamon & Chilli Flakes', category: 'Pantry & Spices', shop: 'sun', checked: false, custom: false },
+      { id: 'g25', name: 'Chia Seeds, Flaxseeds, Pumpkin Seeds & Walnuts', category: 'Pantry & Spices', shop: 'sun', checked: false, custom: false },
+      { id: 'g3', name: '4–5 Sea Bass Fillets (cook tonight)', category: 'Proteins & Fish', shop: 'wed', checked: false, custom: false },
+      { id: 'g5', name: '1kg Lean Lamb Mince (for Thursday)', category: 'Proteins & Fish', shop: 'wed', checked: false, custom: false },
+      { id: 'g26', name: '1 Large Whole Chicken (approx. 2–2.2kg, for Saturday roast)', category: 'Proteins & Fish', shop: 'wed', checked: false, custom: false },
+      { id: 'g6b', name: '600g Raw King Prawns (frozen is ideal, for Sunday)', category: 'Proteins & Fish', shop: 'wed', checked: false, custom: false },
+      { id: 'g12', name: 'Fresh Ripe Tomatoes (for Sunday stew)', category: 'Vegetables & Salad', shop: 'wed', checked: false, custom: false },
+      { id: 'g14b', name: 'Chestnut Mushrooms (for Friday) & Fresh Mint (for Saturday)', category: 'Vegetables & Salad', shop: 'wed', checked: false, custom: false },
+      { id: 'g13b', name: 'Mixed Salad Leaves, Cucumber & Spinach (for Thu–Sun)', category: 'Vegetables & Salad', shop: 'wed', checked: false, custom: false },
+      { id: 'g30', name: 'Olives (for Thursday lunch)', category: 'Vegetables & Salad', shop: 'wed', checked: false, custom: false },
+      { id: 'g31', name: '3 Apples (for Thursday oats)', category: 'Vegetables & Salad', shop: 'wed', checked: false, custom: false },
+      { id: 'g25c', name: 'Fresh Blueberries (for Saturday oats)', category: 'Vegetables & Salad', shop: 'wed', checked: false, custom: false },
+      { id: 'g22b', name: 'Avocados for Fri & Sun (3, mix of ripe and firm)', category: 'Dairy & Fats', shop: 'wed', checked: false, custom: false }
     ];
 
     // --- SUNDAY BATCH PREP STEPS ---
@@ -448,7 +469,11 @@
       packs2:   n => up(sc(2, n)),
       rice:     n => up(sc(2000, n), 500),
       eggs:     n => [up(sc(36, n), 6) / 12, up(sc(48, n), 6) / 12],
-      avocado:  n => [up(sc(5, n)), up(sc(6, n))]
+      avocado:  n => [up(sc(5, n)), up(sc(6, n))],
+      avoHalf:  n => up(sc(3, n)),
+      lemons:   n => up(sc(4, n)),
+      garlic:   n => n >= 4 ? 2 : 1,
+      apples:   n => up(sc(3, n))
     };
 
     // Grocery item names for any family size (items not listed here don't scale: oils, spices, etc.)
@@ -458,9 +483,10 @@
              : n <= 4 ? '1 Medium Whole Chicken (approx. 1.6kg, for Saturday roast)'
              : '1 Large Whole Chicken (approx. 2–2.2kg, for Saturday roast)',
       g2:  n => `${range(...qty.fish45(n))} Salmon Fillet${qty.fish45(n)[1] > 1 ? 's' : ''}`,
-      g3:  n => `${range(...qty.fish45(n))} Sea Bass Fillet${qty.fish45(n)[1] > 1 ? 's' : ''}`,
-      g5:  n => `${kg(qty.lamb(n))} Lean Lamb Mince`,
-      g6:  n => `${plural(qty.steaks(n), 'Steak')} & ${kg(qty.prawns(n))} King Prawns`,
+      g3:  n => `${range(...qty.fish45(n))} Sea Bass Fillet${qty.fish45(n)[1] > 1 ? 's' : ''} (cook tonight)`,
+      g5:  n => `${kg(qty.lamb(n))} Lean Lamb Mince (for Thursday)`,
+      g6:  n => plural(qty.steaks(n), 'Steak'),
+      g6b: n => `${kg(qty.prawns(n))} Raw King Prawns (frozen is ideal, for Sunday)`,
       g7:  n => `${plural(qty.tuna(n), 'Tin')} Tuna in Olive Oil (Only canned item)`,
       g8:  n => `${qty.cauli(n)} Large Head${qty.cauli(n) > 1 ? 's' : ''} of Cauliflower`,
       g9:  n => `${kg(qty.potatoes(n))} Baby Potatoes & ${kg(qty.potatoes(n))} Sweet Potatoes`,
@@ -471,7 +497,11 @@
       g16: n => `${qty.packs2(n)} Large Pack${qty.packs2(n) > 1 ? 's' : ''} Giant Couscous`,
       g17: n => `${kg(qty.rice(n))} Basmati or Brown Rice`,
       g20: n => { const [a, b] = qty.eggs(n); return `Eggs (${a === b ? dozen(a) : dozen(a) + '–' + dozen(b)} dozen)`; },
-      g22: n => `Avocados (${range(...qty.avocado(n))} ripe)`
+      g22: n => `Avocados for Mon & Wed (${qty.avoHalf(n)}, mix of ripe and firm)`,
+      g22b: n => `Avocados for Fri & Sun (${qty.avoHalf(n)}, mix of ripe and firm)`,
+      g28: n => plural(qty.lemons(n), 'Lemon'),
+      g29: n => `${qty.garlic(n)} Bulb${qty.garlic(n) > 1 ? 's' : ''} Fresh Garlic`,
+      g31: n => `${plural(qty.apples(n), 'Apple')} (for Thursday oats)`,
     };
 
     function displayName(item) {
@@ -694,6 +724,10 @@
         });
       } catch (e) { groceryItems = freshGroceryItems(); }
       try {
+        const v = localStorage.getItem(STORAGE_KEY_VIEW);
+        if (v === 'day' || v === 'aisle') groceryView = v;
+      } catch (e) {}
+      try {
         const m = localStorage.getItem(STORAGE_KEY_METHOD);
         if (['oven', 'airfryer', 'skillet'].includes(m)) preferredMethod = m;
       } catch (e) {}
@@ -850,46 +884,87 @@
       });
     }
 
+    const SHOPS = {
+      sun: { title: 'Shop 1 · Sunday', when: 'Main shop, before the batch prep',
+             why: 'Everything for the Sunday prep and Monday–Wednesday meals, plus cupboard staples that keep all week. Salmon is for Monday (buy 1–2 extra fillets for Tuesday lunch); steaks keep fine in the fridge until Tuesday.' },
+      wed: { title: 'Shop 2 · Wednesday', when: 'Quick top-up for Thursday–Sunday',
+             why: "Fresh fish and meat for the rest of the week, so nothing sits in the fridge too long. The sea bass is for Wednesday night itself. Next week's Sunday shop is for the following week, so Sunday's own stew and prawns come from this shop." },
+      extra: { title: 'Your extra items', when: 'Added by you', why: '' }
+    };
+    const STORAGE_KEY_VIEW = 'liv100_grocery_view_v1';
+    let groceryView = 'day';
+
+    function setGroceryView(v) {
+      groceryView = v;
+      try { localStorage.setItem(STORAGE_KEY_VIEW, v); } catch (e) {}
+      renderGroceryList();
+    }
+
+    function groceryRow(item) {
+      return `
+            <label class="flex items-start gap-3 p-2.5 rounded-xl hover:bg-stone-50 transition cursor-pointer select-none">
+              <input type="checkbox" onchange="toggleGroceryItem('${item.id}')"
+                class="mt-0.5 w-4 h-4 rounded text-paprika focus:ring-paprika/20 border-stone-300 cursor-pointer" ${item.checked ? 'checked' : ''} />
+              <span class="text-sm font-medium text-stone-800 flex-1 leading-snug">${displayName(item)}</span>
+              ${item.custom ? `<button onclick="event.preventDefault(); event.stopPropagation(); removeCustomItem('${item.id}')" class="text-stone-400 hover:text-red-500 text-xs px-1" aria-label="Remove">&times;</button>` : ''}
+            </label>`;
+    }
+
+    function groupByCategory(items) {
+      const cats = {};
+      items.forEach(item => { (cats[item.category] = cats[item.category] || []).push(item); });
+      return cats;
+    }
+
     function renderGroceryList() {
       const container = document.getElementById('groceryCategoriesContainer');
-      container.innerHTML = '';
+      const on = 'bg-white text-forest shadow-xs', off = 'text-stone-600 hover:text-forest';
+      document.getElementById('viewByDay').className = `px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition ${groceryView === 'day' ? on : off}`;
+      document.getElementById('viewByAisle').className = `px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition ${groceryView === 'aisle' ? on : off}`;
+      let html = '';
 
-      const categories = {};
-      groceryItems.forEach(item => {
-        if (!categories[item.category]) categories[item.category] = [];
-        categories[item.category].push(item);
-      });
-
-      for (const [catName, items] of Object.entries(categories)) {
-        let itemsHtml = '';
-        items.forEach(item => {
-          itemsHtml += `
-            <label class="flex items-start gap-3 p-2.5 rounded-xl hover:bg-stone-50 transition cursor-pointer select-none">
-              <input 
-                type="checkbox" 
-                onchange="toggleGroceryItem('${item.id}')"
-                class="mt-0.5 w-4 h-4 rounded text-paprika focus:ring-paprika/20 border-stone-300 cursor-pointer"
-                ${item.checked ? 'checked' : ''}
-              />
-              <span class="text-sm font-medium text-stone-800 flex-1 leading-snug">${displayName(item)}</span>
-              ${item.custom ? `<button onclick="event.preventDefault(); event.stopPropagation(); removeCustomItem('${item.id}')" class="text-stone-400 hover:text-red-500 text-xs px-1">&times;</button>` : ''}
-            </label>
-          `;
-        });
-
-        container.innerHTML += `
+      if (groceryView === 'aisle') {
+        container.className = 'grid grid-cols-1 md:grid-cols-2 gap-5';
+        for (const [catName, items] of Object.entries(groupByCategory(groceryItems))) {
+          html += `
           <div class="bg-white rounded-3xl p-5 border border-stone-200/80 shadow-xs space-y-3">
             <h3 class="font-display font-bold text-base text-forest pb-2 border-b border-stone-100 flex items-center justify-between">
               <span>${catName}</span>
               <span class="text-xs font-sans font-semibold text-stone-400">${items.filter(i => i.checked).length}/${items.length}</span>
             </h3>
-            <div class="space-y-1">
-              ${itemsHtml}
+            <div class="space-y-1">${items.map(groceryRow).join('')}</div>
+          </div>`;
+        }
+      } else {
+        container.className = 'grid grid-cols-1 gap-5';
+        for (const shopKey of ['sun', 'wed', 'extra']) {
+          const items = groceryItems.filter(i => (i.custom || !i.shop ? 'extra' : i.shop) === shopKey);
+          if (!items.length) continue;
+          const shop = SHOPS[shopKey];
+          const groups = Object.entries(groupByCategory(items)).map(([catName, list]) => `
+              <div>
+                <p class="text-[11px] font-bold uppercase tracking-wider text-stone-400 px-2.5 mb-1">${catName}</p>
+                <div class="space-y-1">${list.map(groceryRow).join('')}</div>
+              </div>`).join('');
+          html += `
+          <div class="bg-white rounded-3xl p-5 sm:p-6 border border-stone-200/80 shadow-xs space-y-4">
+            <div class="flex flex-wrap items-start justify-between gap-2 pb-3 border-b border-stone-100">
+              <div>
+                <h3 class="font-display font-bold text-lg text-forest">${shop.title}</h3>
+                <p class="text-xs font-semibold text-paprika">${shop.when}</p>
+                ${shop.why ? `<p class="text-sm text-stone-500 mt-1.5 max-w-2xl">${shop.why}</p>` : ''}
+              </div>
+              <span class="text-xs font-semibold text-stone-400">${items.filter(i => i.checked).length}/${items.length} ticked</span>
             </div>
-          </div>
-        `;
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">${groups}</div>
+          </div>`;
+        }
+        html += `
+          <div class="rounded-3xl p-5 border border-dashed border-stone-300 text-sm text-stone-600">
+            <strong class="text-forest">Can only shop once?</strong> Buy everything on Sunday, then freeze the sea bass, lamb mince, whole chicken and prawns straight away. Defrost each one in the fridge the night before you need it (the whole chicken needs 1–2 days). Buy tomatoes, mushrooms and the second lot of salad, avocados and berries as late as you can.
+          </div>`;
       }
-
+      container.innerHTML = html;
       updateGroceryProgress();
     }
 
@@ -997,7 +1072,9 @@
     // To change the password, ask Claude for a new code for this line.
     // Accepted: "i am enough" or "i am worthy" (spaces and capitals don't matter)
     const FAMILY_PASSWORD_HASHES = ['9eeaf943334d1784140ca83a5266e95e1500df629e49ccd4503486497642ed9a', '56b758d45b733164dcab199239bc27e525aec64c756d8542ab754c75ff4ccf0c'];
-    const UNLOCK_KEY = 'liv100_unlocked_v1';
+    const UNLOCK_KEY = 'liv100_unlocked_v2';
+    // How often the family is asked to type their affirmation again (in hours)
+    const REASK_HOURS = 4;
 
     // Plain-JavaScript SHA-256, so the check works everywhere (some browsers/frames block crypto.subtle)
     function sha256Fallback(ascii) {
@@ -1048,9 +1125,35 @@
       }
     }
 
+    function readUnlock() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(UNLOCK_KEY) || 'null');
+        if (saved && FAMILY_PASSWORD_HASHES.includes(saved.hash)) return saved;
+      } catch (e) {}
+      return null;
+    }
+
+    function unlockStillValid() {
+      const saved = readUnlock();
+      return !!saved && (Date.now() - saved.at) < REASK_HOURS * 3600 * 1000;
+    }
+
     function unlockPage() {
-      document.getElementById('lockScreen').remove();
+      const screen = document.getElementById('lockScreen');
+      screen.classList.add('hidden');
+      screen.style.display = 'none';
       document.body.classList.remove('overflow-hidden');
+    }
+
+    function lockPage() {
+      const screen = document.getElementById('lockScreen');
+      if (screen.style.display !== 'none') return;
+      if (typeof closeCook === 'function') closeCook();
+      document.getElementById('familyPassword').value = '';
+      document.getElementById('passwordError').classList.add('hidden');
+      screen.classList.remove('hidden');
+      screen.style.display = '';
+      document.body.classList.add('overflow-hidden');
     }
 
     async function checkPassword(e) {
@@ -1059,7 +1162,8 @@
       const err = document.getElementById('passwordError');
       const hash = await sha256(input.value.toUpperCase().replace(/[^A-Z]/g, ''));
       if (FAMILY_PASSWORD_HASHES.includes(hash)) {
-        try { localStorage.setItem(UNLOCK_KEY, hash); } catch (e) {}
+        try { localStorage.setItem(UNLOCK_KEY, JSON.stringify({ hash, at: Date.now() })); } catch (e) {}
+        input.blur();
         unlockPage();
       } else {
         err.classList.remove('hidden');
@@ -1068,13 +1172,14 @@
       }
     }
 
-    (function autoUnlock() {
-      let saved = null;
-      try { saved = localStorage.getItem(UNLOCK_KEY); } catch (e) {}
-      if (FAMILY_PASSWORD_HASHES.includes(saved)) {
-        window.addEventListener('DOMContentLoaded', unlockPage);
-      }
-    })();
+    // Ask again when the time is up: on opening, on coming back to the tab, and every minute while open
+    function checkLock() { if (!unlockStillValid()) lockPage(); }
+    window.addEventListener('DOMContentLoaded', () => {
+      if (unlockStillValid()) unlockPage();
+      setInterval(checkLock, 60 * 1000);
+    });
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') checkLock(); });
+    window.addEventListener('pageshow', checkLock);
 
     window.addEventListener('DOMContentLoaded', initApp);
   </script>
